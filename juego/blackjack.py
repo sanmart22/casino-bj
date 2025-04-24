@@ -14,7 +14,7 @@ def calcular_valor_mano(mano):
     return suma
 
 def jugar_blackjack(usuario):
-    print(f"\n¡Comienza la partida de Blackjack para {usuario}!")
+    print(f"\nComienza la partida de Blackjack {usuario}")
     mazo = crear_mazo()
     jugador_mano = [mazo.pop(), mazo.pop()]
     dealer_mano = [mazo.pop(), mazo.pop()]
@@ -23,13 +23,13 @@ def jugar_blackjack(usuario):
     print(f"Mano del dealer: {mostrar_mano(dealer_mano, ocultar_primera=True)}")
 
     while calcular_valor_mano(jugador_mano) < 21:
-        accion = input("¿Pedir (p) o Plantarse (pl)? ").lower()
+        accion = input("Pedir (p) o Plantarse (pl)? ").lower()
         if accion == 'p':
             jugador_mano.append(mazo.pop())
             print(f"Tu mano ahora: {mostrar_mano(jugador_mano)} (Valor: {calcular_valor_mano(jugador_mano)})")
             if calcular_valor_mano(jugador_mano) > 21:
-                print("¡Te has pasado! Dealer gana.")
-                guardar_partida(usuario, "Perdió", calcular_valor_mano(jugador_mano), calcular_valor_mano(dealer_mano))
+                print("Te pasaste, Dealer gana")
+                guardar_partida(usuario, "Perdiste", calcular_valor_mano(jugador_mano), calcular_valor_mano(dealer_mano))
                 return
         elif accion == 'pl':
             break
@@ -39,18 +39,18 @@ def jugar_blackjack(usuario):
         dealer_mano.append(mazo.pop())
         print(f"Mano del dealer ahora: {mostrar_mano(dealer_mano)} (Valor: {calcular_valor_mano(dealer_mano)})")
         if calcular_valor_mano(dealer_mano) > 21:
-            print("¡El dealer se ha pasado! ¡Tú ganas!")
-            guardar_partida(usuario, "Ganó", calcular_valor_mano(jugador_mano), calcular_valor_mano(dealer_mano))
+            print("El dealer se paso, ganaste")
+            guardar_partida(usuario, "Gano", calcular_valor_mano(jugador_mano), calcular_valor_mano(dealer_mano))
             return
 
     jugador_valor = calcular_valor_mano(jugador_mano)
     dealer_valor = calcular_valor_mano(dealer_mano)
     if jugador_valor > dealer_valor:
-        print("¡Tú ganas!")
-        guardar_partida(usuario, "Ganó", jugador_valor, dealer_valor)
+        print("Ganaste")
+        guardar_partida(usuario, "Gano", jugador_valor, dealer_valor)
     elif dealer_valor > jugador_valor:
-        print("Dealer gana.")
-        guardar_partida(usuario, "Perdió", jugador_valor, dealer_valor)
+        print("Gana Dealer")
+        guardar_partida(usuario, "Perdio", jugador_valor, dealer_valor)
     else:
-        print("¡Empate!")
+        print("Empate")
         guardar_partida(usuario, "Empate", jugador_valor, dealer_valor)

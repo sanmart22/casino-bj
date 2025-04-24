@@ -3,7 +3,7 @@ from juego.blackjack import jugar_blackjack
 from juego.historial import ver_historial
 
 def mostrar_menu():
-    print("\nBienvenido al Casino Python!")
+    print("\nCasino BC")
     print("1. Registrarse")
     print("2. Iniciar Sesión")
     print("3. Jugar Blackjack")
@@ -14,7 +14,7 @@ def main():
     usuario_actual = None
     while True:
         mostrar_menu()
-        opcion = input("Seleccione una opción: ")
+        opcion = input("Selecciona una opción: ")
 
         if opcion == '1':
             registrar_usuario()
@@ -24,17 +24,17 @@ def main():
             if usuario_actual:
                 jugar_blackjack(usuario_actual)
             else:
-                print("Debes iniciar sesión para jugar.")
+                print("Tenes que iniciar sesión para jugar")
         elif opcion == '4':
             if usuario_actual:
                 ver_historial(usuario_actual)
             else:
-                print("Debes iniciar sesión para ver el historial.")
+                print("Tenes que iniciar sesión para ver el historial")
         elif opcion == '5':
-            print("Gracias por visitar el Casino Python!")
+            print("Gracias por visitarnos")
             break
         else:
-            print("Opción inválida.")
+            print("Opción inválida")
 
 if __name__ == "__main__":
     main()
