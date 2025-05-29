@@ -1,3 +1,4 @@
+
 from utils.mazo import crear_mazo, mostrar_mano
 from .historial import guardar_partida
 
@@ -13,11 +14,22 @@ def calcular_valor_mano(mano):
         ases -= 1
     return suma
 
+def repartir_manos(mazo):
+    return ([mazo.pop(), mazo.pop()], [mazo.pop(), mazo.pop()])
+
+def resumen_partida(jugador, dealer, resultado):
+    return {
+        "jugador": tuple(jugador),
+        "dealer": tuple(dealer),
+        "resultado": resultado,
+        "puntaje_jugador": calcular_valor_mano(jugador),
+        "puntaje_dealer": calcular_valor_mano(dealer)
+    }
+
 def jugar_blackjack(usuario):
     print(f"\nComienza la partida de Blackjack {usuario}")
     mazo = crear_mazo()
-    jugador_mano = [mazo.pop(), mazo.pop()]
-    dealer_mano = [mazo.pop(), mazo.pop()]
+    jugador_mano, dealer_mano = repartir_manos(mazo)
 
     print(f"Tu mano: {mostrar_mano(jugador_mano)}")
     print(f"Mano del dealer: {mostrar_mano(dealer_mano, ocultar_primera=True)}")
@@ -29,7 +41,8 @@ def jugar_blackjack(usuario):
             print(f"Tu mano ahora: {mostrar_mano(jugador_mano)} (Valor: {calcular_valor_mano(jugador_mano)})")
             if calcular_valor_mano(jugador_mano) > 21:
                 print("Te pasaste, Dealer gana")
-                guardar_partida(usuario, "Perdiste", calcular_valor_mano(jugador_mano), calcular_valor_mano(dealer_mano))
+                datos = resumen_partida(jugador_mano, dealer_mano, "Perdiste")
+                guardar_partida(usuario, datos["resultado"], datos["puntaje_jugador"], datos["puntaje_dealer"])
                 return
         elif accion == 'pl':
             break
@@ -40,17 +53,22 @@ def jugar_blackjack(usuario):
         print(f"Mano del dealer ahora: {mostrar_mano(dealer_mano)} (Valor: {calcular_valor_mano(dealer_mano)})")
         if calcular_valor_mano(dealer_mano) > 21:
             print("El dealer se paso, ganaste")
-            guardar_partida(usuario, "Gano", calcular_valor_mano(jugador_mano), calcular_valor_mano(dealer_mano))
+            datos = resumen_partida(jugador_mano, dealer_mano, "Gano")
+            guardar_partida(usuario, datos["resultado"], datos["puntaje_jugador"], datos["puntaje_dealer"])
             return
 
     jugador_valor = calcular_valor_mano(jugador_mano)
     dealer_valor = calcular_valor_mano(dealer_mano)
+
     if jugador_valor > dealer_valor:
         print("Ganaste")
-        guardar_partida(usuario, "Gano", jugador_valor, dealer_valor)
+        resultado = "Gano"
     elif dealer_valor > jugador_valor:
         print("Gana Dealer")
-        guardar_partida(usuario, "Perdio", jugador_valor, dealer_valor)
+        resultado = "Perdio"
     else:
         print("Empate")
-        guardar_partida(usuario, "Empate", jugador_valor, dealer_valor)
+        resultado = "Empate"
+
+    datos = resumen_partida(jugador_mano, dealer_mano, resultado)
+    guardar_partida(usuario, datos["resultado"], datos["puntaje_jugador"], datos["puntaje_dealer"])
