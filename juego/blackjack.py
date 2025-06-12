@@ -1,4 +1,5 @@
-
+from rich.console import Console
+from rich.panel import Panel
 from utils.mazo import crear_mazo, mostrar_mano
 from .historial import guardar_partida
 
@@ -27,32 +28,33 @@ def resumen_partida(jugador, dealer, resultado):
     }
 
 def jugar_blackjack(usuario):
-    print(f"\nComienza la partida de Blackjack {usuario}")
+    console = Console()
+    console.print(Panel(f"Comienza la partida de Blackjack {usuario}", style="bold cyan"))
     mazo = crear_mazo()
     jugador_mano, dealer_mano = repartir_manos(mazo)
 
-    print(f"Tu mano: {mostrar_mano(jugador_mano)}")
-    print(f"Mano del dealer: {mostrar_mano(dealer_mano, ocultar_primera=True)}")
+    console.print(f"Tu mano: {mostrar_mano(jugador_mano)}")
+    console.print(f"Mano del dealer: {mostrar_mano(dealer_mano, ocultar_primera=True)}")
 
     while calcular_valor_mano(jugador_mano) < 21:
         accion = input("Pedir (p) o Plantarse (pl)? ").lower()
         if accion == 'p':
             jugador_mano.append(mazo.pop())
-            print(f"Tu mano ahora: {mostrar_mano(jugador_mano)} (Valor: {calcular_valor_mano(jugador_mano)})")
+            console.print(f"Tu mano ahora: {mostrar_mano(jugador_mano)} (Valor: {calcular_valor_mano(jugador_mano)})")
             if calcular_valor_mano(jugador_mano) > 21:
-                print("Te pasaste, Dealer gana")
+                console.print(Panel("Te pasaste, Dealer gana", style="bold red"))
                 datos = resumen_partida(jugador_mano, dealer_mano, "Perdiste")
                 guardar_partida(usuario, datos["resultado"], datos["puntaje_jugador"], datos["puntaje_dealer"])
                 return
         elif accion == 'pl':
             break
 
-    print(f"\nMano del dealer: {mostrar_mano(dealer_mano)} (Valor: {calcular_valor_mano(dealer_mano)})")
+    console.print(f"\nMano del dealer: {mostrar_mano(dealer_mano)} (Valor: {calcular_valor_mano(dealer_mano)})")
     while calcular_valor_mano(dealer_mano) < 17:
         dealer_mano.append(mazo.pop())
-        print(f"Mano del dealer ahora: {mostrar_mano(dealer_mano)} (Valor: {calcular_valor_mano(dealer_mano)})")
+        console.print(f"Mano del dealer ahora: {mostrar_mano(dealer_mano)} (Valor: {calcular_valor_mano(dealer_mano)})")
         if calcular_valor_mano(dealer_mano) > 21:
-            print("El dealer se paso, ganaste")
+            console.print(Panel("El dealer se pasó, ganaste", style="bold green"))
             datos = resumen_partida(jugador_mano, dealer_mano, "Gano")
             guardar_partida(usuario, datos["resultado"], datos["puntaje_jugador"], datos["puntaje_dealer"])
             return
@@ -61,13 +63,13 @@ def jugar_blackjack(usuario):
     dealer_valor = calcular_valor_mano(dealer_mano)
 
     if jugador_valor > dealer_valor:
-        print("Ganaste")
+        console.print(Panel("Ganaste", style="bold green"))
         resultado = "Gano"
     elif dealer_valor > jugador_valor:
-        print("Gana Dealer")
+        console.print(Panel("Gana Dealer", style="bold red"))
         resultado = "Perdio"
     else:
-        print("Empate")
+        console.print(Panel("Empate", style="bold yellow"))
         resultado = "Empate"
 
     datos = resumen_partida(jugador_mano, dealer_mano, resultado)

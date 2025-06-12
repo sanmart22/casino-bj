@@ -1,3 +1,6 @@
+from rich.console import Console
+from rich.panel import Panel
+
 class UsuarioExistenteError(Exception):
     pass
 class UsuarioNoEncontradoError(Exception):
@@ -7,6 +10,7 @@ class ContrasenaIncorrectaError(Exception):
 usuarios = {}
 
 def registrar_usuario():
+    console = Console()
     try:
         nombre = input("Ingrese nombre de usuario: ").strip()
         if nombre.lower() in (n.lower() for n in usuarios):
@@ -14,12 +18,13 @@ def registrar_usuario():
         
         contrasena = input("Ingrese contraseña: ").strip()
         usuarios[nombre] = contrasena
-        print(f"Usuario '{nombre.upper()}' registrado con exito")
+        console.print(Panel(f"Usuario '{nombre.upper()}' registrado con éxito", style="bold green"))
 
     except UsuarioExistenteError as e:
-        print(f"Error: {e}")
+        console.print(Panel(f"Error: {e}", style="bold red"))
 
 def iniciar_sesion():
+    console = Console()
     try:
         nombre = input("Ingrese nombre de usuario: ").strip()
         if nombre not in usuarios:
@@ -29,9 +34,9 @@ def iniciar_sesion():
         if usuarios[nombre] != contrasena:
             raise ContrasenaIncorrectaError("Contraseña incorrecta")
         else:
-            print(f"Bienvenido, {nombre.upper()}!")
+            console.print(Panel(f"Bienvenido, {nombre.upper()}!", style="bold green"))
         return nombre
     except UsuarioNoEncontradoError as e:
-        print(f"Error: {e}")
+        console.print(Panel(f"Error: {e}", style="bold red"))
     except ContrasenaIncorrectaError as e:
-        print(f"Error: {e}")
+        console.print(Panel(f"Error: {e}", style="bold red"))
