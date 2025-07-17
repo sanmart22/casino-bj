@@ -7,15 +7,15 @@ import random
 def crear_mazo(recursivo=False):
     palos = ["Corazones", "Diamantes", "Tréboles", "Picas"]  # Lista de cadenas
     rangos = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]  # Lista de cadenas
-    mazo = [(p, r) for p in palos for r in rangos]  # Lista de tuplas (producto cartesiano)
+    mazo = [(p, r) for p in palos for r in rangos]  # Lista de tuplas 
     if recursivo:
         barajar_mazo_recursivo(mazo)
     else:
-        random.shuffle(mazo)  # Mezcla aleatoria del mazo (modifica la lista in-place)
+        random.shuffle(mazo)  # Mezcla aleatoria del mazo 
     return mazo
 
 # Función recursiva para barajar el mazo
-# Implementa el algoritmo de Fisher-Yates de forma recursiva
+
 def barajar_mazo_recursivo(mazo, n=None):
     if n is None:
         n = len(mazo)
