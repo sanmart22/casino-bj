@@ -1,4 +1,4 @@
-from usuarios.gestion_usuarios import registrar_usuario, iniciar_sesion
+from usuarios.gestion_usuarios import registrar_usuario, iniciar_sesion, cargar_balances, guardar_balances
 from juego.blackjack import jugar_blackjack
 from juego.historial import ver_historial
 from rich.console import Console
@@ -12,7 +12,8 @@ def mostrar_menu():
 [bold yellow]2.[/bold yellow] Iniciar Sesión
 [bold yellow]3.[/bold yellow] Jugar Blackjack
 [bold yellow]4.[/bold yellow] Ver Historial
-[bold yellow]5.[/bold yellow] Salir
+[bold yellow]5.[/bold yellow] Recargar Fichas
+[bold yellow]6.[/bold yellow] Salir
 """
     console.print(Panel(menu, title="[bold green]Menú Principal[/bold green]", expand=False))
 
@@ -39,6 +40,23 @@ def main():
             else:
                 console.print("[bold red]Tenes que iniciar sesión para ver el historial[/bold red]")
         elif opcion == '5':
+            if usuario_actual:
+                balances = cargar_balances()
+                saldo = balances.get(usuario_actual, 0)
+                try:
+                    monto = int(input(f"¿Cuántas fichas quieres recargar? (Saldo actual: {saldo}): "))
+                    if monto > 0:
+                        saldo += monto
+                        balances[usuario_actual] = saldo
+                        guardar_balances(balances)
+                        console.print(Panel(f"Recargaste {monto} fichas. Nuevo saldo: {saldo}", style="bold green"))
+                    else:
+                        console.print("[bold red]El monto debe ser mayor a 0[/bold red]")
+                except ValueError:
+                    console.print("[bold red]Ingresa un número válido[/bold red]")
+            else:
+                console.print("[bold red]Tenes que iniciar sesión para recargar fichas[/bold red]")
+        elif opcion == '6':
             console.print(Panel("Gracias por visitarnos", style="bold green"))
             break
         else:

@@ -2,6 +2,7 @@ from rich.console import Console
 from rich.panel import Panel
 from utils.mazo import crear_mazo, mostrar_mano
 from .historial import guardar_partida
+from usuarios.gestion_usuarios import cargar_balances, guardar_balances
 
 def calcular_valor_mano(mano):
     valores = {
@@ -29,6 +30,26 @@ def resumen_partida(jugador, dealer, resultado):
 
 def jugar_blackjack(usuario):
     console = Console()
+    balances = cargar_balances()
+    saldo = balances.get(usuario, 0)
+    if saldo <= 0:
+        console.print(Panel("No tienes fichas suficientes para jugar. Recarga fichas desde el menú.", style="bold red"))
+        return
+    while True:
+        try:
+            apuesta = int(input(f"¿Cuántas fichas quieres apostar? (Saldo: {saldo}): "))
+            if apuesta <= 0:
+                console.print("La apuesta debe ser mayor a 0.")
+            elif apuesta > saldo:
+                console.print("No tienes suficientes fichas para esa apuesta.")
+            else:
+                break
+        except ValueError:
+            console.print("Ingresa un número válido.")
+    saldo -= apuesta
+    balances[usuario] = saldo
+    guardar_balances(balances)
+
     console.print(Panel(f"Comienza la partida de Blackjack {usuario}", style="bold cyan"))
     mazo = crear_mazo()
     jugador_mano, dealer_mano = repartir_manos(mazo)
@@ -45,6 +66,7 @@ def jugar_blackjack(usuario):
                 console.print(Panel("Te pasaste, Dealer gana", style="bold red"))
                 datos = resumen_partida(jugador_mano, dealer_mano, "Perdiste")
                 guardar_partida(usuario, datos["resultado"], datos["puntaje_jugador"], datos["puntaje_dealer"])
+                console.print(f"Saldo actual: {saldo}")
                 return
         elif accion == 'pl':
             break
@@ -56,7 +78,11 @@ def jugar_blackjack(usuario):
         if calcular_valor_mano(dealer_mano) > 21:
             console.print(Panel("El dealer se pasó, ganaste", style="bold green"))
             datos = resumen_partida(jugador_mano, dealer_mano, "Gano")
+            saldo += apuesta * 2
+            balances[usuario] = saldo
+            guardar_balances(balances)
             guardar_partida(usuario, datos["resultado"], datos["puntaje_jugador"], datos["puntaje_dealer"])
+            console.print(f"Saldo actual: {saldo}")
             return
 
     jugador_valor = calcular_valor_mano(jugador_mano)
@@ -65,12 +91,17 @@ def jugar_blackjack(usuario):
     if jugador_valor > dealer_valor:
         console.print(Panel("Ganaste", style="bold green"))
         resultado = "Gano"
+        saldo += apuesta * 2
     elif dealer_valor > jugador_valor:
         console.print(Panel("Gana Dealer", style="bold red"))
         resultado = "Perdio"
+        # saldo ya descontado
     else:
         console.print(Panel("Empate", style="bold yellow"))
         resultado = "Empate"
-
+        saldo += apuesta
+    balances[usuario] = saldo
+    guardar_balances(balances)
     datos = resumen_partida(jugador_mano, dealer_mano, resultado)
     guardar_partida(usuario, datos["resultado"], datos["puntaje_jugador"], datos["puntaje_dealer"])
+    console.print(f"Saldo actual: {saldo}")
