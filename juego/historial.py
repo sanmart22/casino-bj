@@ -50,11 +50,9 @@ def ver_historial(usuario):
     console = Console()
     console.print(Panel("--- Historial de Partidas ---", style="bold cyan"))
     historial = cargar_historial()  # Lista de diccionarios
-    # Filtrado usando comprensión de listas y comparación de cadenas
-    partidas_usuario = [p for p in historial if p['usuario'] == usuario]
-    # Slicing para mostrar solo las últimas 5 partidas
+    # Usando filter y lambda para filtrar partidas del usuario
+    partidas_usuario = list(filter(lambda p: p['usuario'] == usuario, historial))
     for p in partidas_usuario[-5:]:
-        # Formateo de cadenas para mostrar los datos de cada partida
         console.print(f"Resultado: {p['resultado']} | Puntaje: {p['jugador_valor']} - Dealer: {p['dealer_valor']}")
 
 # Notas generales:
