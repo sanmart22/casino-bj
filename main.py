@@ -13,7 +13,7 @@ from rich.panel import Panel
 def mostrar_menu():
     console = Console()
     menu = """
-[bold cyan]Casino BC[/bold cyan]
+[bold cyan]Casino BJ[/bold cyan]
 [bold yellow]1.[/bold yellow] Registrarse
 [bold yellow]2.[/bold yellow] Iniciar Sesión
 [bold yellow]3.[/bold yellow] Jugar Blackjack
